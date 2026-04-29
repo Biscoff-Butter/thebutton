@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Button Dilemma</title>
+    <meta name="description" content="The Red vs Blue Button Dilemma. Will you survive?">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="blob red-blob"></div>
+        <div class="blob blue-blob"></div>
+    </div>
+
+    <main class="container">
+        <header class="glass-panel text-center">
+            <h1>The Button Dilemma</h1>
+            <p class="subtitle">A test of humanity.</p>
+        </header>
+
+        <section class="rules glass-panel">
+            <h2>The Rules:</h2>
+            <ul>
+                <li>Everyone in the world must choose to press either the <strong>Red</strong> or <strong>Blue</strong> button.</li>
+                <li>If <strong>more than 50%</strong> of people press the <strong class="text-blue">Blue</strong> button, everyone survives.</li>
+                <li>If <strong>less than 50%</strong> press the <strong class="text-blue">Blue</strong> button, only those who pressed the <strong class="text-red">Red</strong> button survive.</li>
+            </ul>
+            <p class="question">What do you choose?</p>
+        </section>
+
+        <section class="button-container">
+            <button id="red-btn" class="dilemma-btn red-btn">
+                <span class="btn-text">Press Red</span>
+                <span class="btn-glow"></span>
+            </button>
+            <button id="blue-btn" class="dilemma-btn blue-btn">
+                <span class="btn-text">Press Blue</span>
+                <span class="btn-glow"></span>
+            </button>
+        </section>
+
+        <section id="results-panel" class="results glass-panel hidden">
+            <h2>Live Results</h2>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h3 class="text-red">Red</h3>
+                    <p id="red-count" class="count">Loading...</p>
+                    <p id="red-percent" class="percent">--%</p>
+                </div>
+                <div class="stat-box">
+                    <h3 class="text-blue">Blue</h3>
+                    <p id="blue-count" class="count">Loading...</p>
+                    <p id="blue-percent" class="percent">--%</p>
+                </div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="red-progress" class="progress red-progress" style="width: 50%;"></div>
+                <div id="blue-progress" class="progress blue-progress" style="width: 50%;"></div>
+                <div class="marker-50"></div>
+            </div>
+            <p id="status-message" class="status-message">Calculating fate...</p>
+            <p class="refresh-note">Results update live.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
