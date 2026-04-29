@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,10 +19,26 @@
             margin: 0;
             text-align: center;
         }
-        .stats { font-size: 32px; line-height: 2; }
-        .red { color: #b32424; }
-        .blue { color: #3b68b8; }
-        .status { margin-top: 50px; font-size: 24px; opacity: 0.7; }
+
+        .stats {
+            font-size: 32px;
+            line-height: 2;
+        }
+
+        .red {
+            color: #b32424;
+        }
+
+        .blue {
+            color: #3b68b8;
+        }
+
+        .status {
+            margin-top: 50px;
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
         button {
             margin-top: 50px;
             background: none;
@@ -33,13 +50,14 @@
         }
     </style>
 </head>
+
 <body>
     <div class="stats">
         <div>RED: <span id="red-count" class="red">...</span> (<span id="red-percent">0%</span>)</div>
         <div>BLUE: <span id="blue-count" class="blue">...</span> (<span id="blue-percent">0%</span>)</div>
     </div>
     <div id="status" class="status">fetching fate...</div>
-    
+
     <button onclick="location.reload()">REFRESH</button>
 
     <script>
@@ -49,8 +67,8 @@
         async function fetchCount(key) {
             try {
                 const response = await fetch(`${API_BASE}/${NAMESPACE}/${key}/`);
-                if (!response.ok) return 0;
                 const data = await response.json();
+                if (!response.ok || data.code === 400) return 0;
                 return data.count || 0;
             } catch (e) { return 0; }
         }
@@ -63,7 +81,11 @@
             document.getElementById('red-count').innerText = red;
             document.getElementById('blue-count').innerText = blue;
 
-            if (total > 0) {
+            if (total === 0) {
+                document.getElementById('red-percent').innerText = '0%';
+                document.getElementById('blue-percent').innerText = '0%';
+                document.getElementById('status').innerText = 'STATUS: NO VOTES YET';
+            } else {
                 const redP = (red / total * 100).toFixed(1);
                 const blueP = (blue / total * 100).toFixed(1);
                 document.getElementById('red-percent').innerText = redP + '%';
@@ -80,4 +102,5 @@
         update();
     </script>
 </body>
+
 </html>
