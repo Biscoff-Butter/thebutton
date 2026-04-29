@@ -1,27 +1,45 @@
+@font-face {
+    font-family: 'VCR OSD Mono';
+    src: local('VCR OSD Mono'), local('VCROSDMono');
+}
+
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'VCR OSD Mono', 'VT323', monospace;
+    font-size: 48px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    justify-content: center;
+    min-height: 100vh;
     margin: 0;
+    padding: 50px 0;
     text-align: center;
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: none;
+    line-height: 1.2;
 }
 
-.eerie-text {
-    font-size: 14px;
-    letter-spacing: 2px;
-    margin-bottom: 50px;
-    line-height: 2;
-    opacity: 0.8;
+.container {
+    max-width: 1200px;
+    width: 100%;
 }
+
+.text-block {
+    margin-bottom: 80px;
+}
+
+.t-blue { color: #3b68b8; }
+.wo-red { color: #b32424; }
+.text-blue { color: #3b68b8; }
+.text-red { color: #b32424; }
 
 .button-container {
     display: flex;
     justify-content: center;
-    gap: 40px;
+    gap: 100px;
+    margin-top: 50px;
     margin-bottom: 50px;
 }
 
@@ -30,32 +48,29 @@ body {
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.1s;
     outline: none;
 }
 
 .img-btn img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    opacity: 0.8;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.05));
+    width: 500px;
+    height: 500px;
+    display: block;
+    image-rendering: pixelated;
 }
 
 .img-btn:hover {
     transform: scale(0.98);
-    opacity: 1;
 }
 
 .img-btn:disabled {
     cursor: not-allowed;
-    filter: grayscale(1) opacity(0.2);
+    filter: grayscale(1) opacity(0.5);
 }
 
 .results {
-    font-size: 14px;
-    letter-spacing: 1px;
-    opacity: 0.8;
+    font-size: 32px;
+    margin-top: 40px;
 }
 
 .hidden {
@@ -64,6 +79,27 @@ body {
 
 .status-message {
     margin-top: 30px;
-    font-size: 12px;
-    opacity: 0.5;
+    color: #ccc;
+}
+
+@media (max-width: 1200px) {
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+    }
+    .img-btn img {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 32px;
+    }
+    .img-btn img {
+        width: 300px;
+        height: 300px;
+    }
 }
