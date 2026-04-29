@@ -31,43 +31,43 @@ function showNextLine() {
     }
 
     isAnimating = true;
-    textDisplay.classList.add('fade-out');
-
-    setTimeout(() => {
+    
+    const startNext = () => {
         textDisplay.innerHTML = storyLines[currentLine];
         textDisplay.classList.remove('fade-out');
         currentLine++;
         isAnimating = false;
 
-        // Auto advance after 4.5 seconds
+        // Auto advance after 5 seconds
         clearTimeout(autoAdvanceTimeout);
-        autoAdvanceTimeout = setTimeout(showNextLine, 4500);
-    }, 500); // 0.5s fade out duration
+        autoAdvanceTimeout = setTimeout(showNextLine, 5000);
+    };
+
+    if (textDisplay.innerHTML.trim() !== "") {
+        textDisplay.classList.add('fade-out');
+        setTimeout(startNext, 600);
+    } else {
+        startNext();
+    }
 }
 
 function showChoice() {
     clearTimeout(autoAdvanceTimeout);
     
-    if (hasVoted) {
-        textDisplay.classList.add('fade-out');
-        setTimeout(() => {
-            textDisplay.innerHTML = 'Thank you for playing.';
-            textDisplay.classList.remove('fade-out');
-        }, 500);
-        return;
-    }
-
     textDisplay.classList.add('fade-out');
     setTimeout(() => {
-        textDisplay.innerHTML = 'Choose.';
+        if (hasVoted) {
+            textDisplay.innerHTML = 'Thank you for playing.';
+        } else {
+            textDisplay.innerHTML = 'Choose.';
+            choiceContainer.classList.remove('hidden');
+        }
         textDisplay.classList.remove('fade-out');
-        choiceContainer.classList.remove('hidden');
-    }, 500);
+    }, 600);
 }
 
 // Click anywhere to advance text faster
-document.addEventListener('click', (e) => {
-    // Don't advance if clicking on a button
+document.addEventListener('mousedown', (e) => {
     if (e.target.closest('button')) return;
     
     if (currentLine <= storyLines.length && !hasVoted) {
@@ -99,16 +99,22 @@ async function handleVote(color) {
     setTimeout(() => {
         textDisplay.innerHTML = 'Thank you for playing.';
         textDisplay.classList.remove('fade-out');
-    }, 500);
+    }, 600);
 
     const key = color === 'red' ? RED_KEY : BLUE_KEY;
     await upvote(key);
 }
 
-redBtn.addEventListener('click', () => handleVote('red'));
-blueBtn.addEventListener('click', () => handleVote('blue'));
+redBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleVote('red');
+});
+blueBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleVote('blue');
+});
 
-// Start sequence
-setTimeout(() => {
+// Start sequence immediately
+window.onload = () => {
     showNextLine();
-}, 500);
+};

@@ -1,8 +1,15 @@
+@font-face {
+    font-family: 'VCR OSD Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: local('VCR OSD Mono'), url('https://fonts.cdnfonts.com/s/14798/VCR_OSD_MONO_1.001[1].woff') format('woff');
+}
+
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'VCR OSD Mono', monospace;
-    font-size: 48px;
+    font-family: 'VCR OSD Mono', 'VT323', monospace;
+    font-size: 64px; /* Increased size */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,6 +22,7 @@ body {
     -webkit-font-smoothing: none;
     line-height: 1.2;
     overflow: hidden;
+    cursor: pointer;
 }
 
 #game-container {
@@ -27,9 +35,11 @@ body {
 }
 
 #text-display {
-    min-height: 120px;
-    transition: opacity 0.5s ease-in-out;
+    min-height: 200px; /* Increased height */
+    transition: opacity 0.4s ease-in-out;
     opacity: 1;
+    max-width: 90vw;
+    word-wrap: break-word;
 }
 
 #text-display.fade-out {
@@ -42,14 +52,14 @@ body {
 .text-red { color: #b32424; }
 
 #choice-container {
-    margin-top: 50px;
-    animation: fadeIn 1s forwards;
+    margin-top: 40px;
+    animation: fadeIn 0.8s forwards;
 }
 
 .button-container {
     display: flex;
     justify-content: center;
-    gap: 100px;
+    gap: 80px;
 }
 
 .img-btn {
@@ -66,15 +76,20 @@ body {
     height: 500px;
     display: block;
     image-rendering: pixelated;
+    border: 2px solid transparent;
 }
 
-.img-btn:hover {
-    transform: scale(0.98);
+.img-btn:hover img {
+    border-color: rgba(255,255,255,0.2);
+}
+
+.img-btn:active {
+    transform: scale(0.95);
 }
 
 .img-btn:disabled {
     cursor: not-allowed;
-    filter: grayscale(1) opacity(0.5);
+    filter: grayscale(1) opacity(0.2);
 }
 
 .hidden {
@@ -87,14 +102,15 @@ body {
 }
 
 @media (max-width: 1200px) {
+    body { font-size: 48px; }
     .button-container {
         flex-direction: column;
         align-items: center;
-        gap: 50px;
+        gap: 30px;
     }
     .img-btn img {
-        width: 400px;
-        height: 400px;
+        width: 350px;
+        height: 350px;
     }
 }
 
@@ -103,7 +119,7 @@ body {
         font-size: 32px;
     }
     .img-btn img {
-        width: 300px;
-        height: 300px;
+        width: 250px;
+        height: 250px;
     }
 }
