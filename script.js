@@ -25,7 +25,6 @@ const storyLines = [
 
 let currentLine = 0;
 let isAnimating = false;
-let autoAdvanceTimeout = null;
 
 let audioCtx = null;
 function startEerieHum() {
@@ -91,10 +90,6 @@ function showNextLine() {
         textDisplay.classList.remove('fade-out');
         currentLine++;
         isAnimating = false;
-
-        // Auto advance after 5 seconds
-        clearTimeout(autoAdvanceTimeout);
-        autoAdvanceTimeout = setTimeout(showNextLine, 5000);
     };
 
     if (textDisplay.innerHTML.trim() !== "") {
@@ -106,8 +101,6 @@ function showNextLine() {
 }
 
 function showChoice() {
-    clearTimeout(autoAdvanceTimeout);
-
     textDisplay.classList.add('fade-out');
     setTimeout(() => {
         if (hasVoted) {
@@ -132,13 +125,32 @@ function endAndClose() {
     }, 100);
 }
 
-// Click anywhere to advance text faster and start audio
+// Fullscreen logic
+function enterFullscreen() {
+    const docElm = document.documentElement;
+    try {
+        if (docElm.requestFullscreen) docElm.requestFullscreen();
+        else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
+        else if (docElm.webkitRequestFullScreen) docElm.webkitRequestFullScreen();
+        else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+    } catch (e) {
+        console.log("Fullscreen request failed. Interaction required.");
+    }
+}
+
+let firstInteraction = true;
+
+// Click anywhere to advance text faster and trigger immersion
 document.addEventListener('mousedown', (e) => {
-    startEerieHum();
+    if (firstInteraction) {
+        enterFullscreen();
+        startEerieHum();
+        firstInteraction = false;
+    }
+
     if (e.target.closest('button')) return;
 
     if (currentLine <= storyLines.length && !hasVoted) {
-        clearTimeout(autoAdvanceTimeout);
         showNextLine();
     }
 });
@@ -184,7 +196,7 @@ blueBtn.addEventListener('click', (e) => {
     handleVote('blue');
 });
 
-// Start sequence immediately
+// Initialization
 window.onload = () => {
     showNextLine();
 };
