@@ -148,7 +148,7 @@ document.addEventListener('mousedown', (e) => {
         firstInteraction = false;
     }
 
-    if (e.target.closest('button')) return;
+    if (e.target instanceof Element && e.target.closest('button')) return;
 
     if (currentLine <= storyLines.length && !hasVoted) {
         showNextLine();
