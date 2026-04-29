@@ -156,11 +156,21 @@ document.addEventListener('mousedown', (e) => {
 });
 
 async function upvote(key) {
+    const url = `${API_BASE}/${NAMESPACE}/${key}/up`;
     try {
-        await fetch(`${API_BASE}/${NAMESPACE}/${key}/up`);
+        // Try fetch first
+        const resp = await fetch(url);
+        if (resp.ok) return true;
     } catch (e) {
-        console.error(e);
+        console.error('Fetch vote failed:', e);
     }
+    // Fallback: sendBeacon guarantees delivery even during page unload
+    try {
+        navigator.sendBeacon(url);
+    } catch (e2) {
+        console.error('sendBeacon vote failed:', e2);
+    }
+    return false;
 }
 
 async function handleVote(color) {
@@ -173,16 +183,18 @@ async function handleVote(color) {
     blueBtn.disabled = true;
 
     choiceContainer.classList.add('hidden');
-    textDisplay.classList.add('fade-out');
 
+    // Send the vote FIRST, before starting any close/navigation
+    const key = color === 'red' ? RED_KEY : BLUE_KEY;
+    await upvote(key);
+
+    // Only proceed with the thank-you/close sequence after vote is confirmed sent
+    textDisplay.classList.add('fade-out');
     setTimeout(() => {
         textDisplay.innerHTML = 'Thank you for playing.';
         textDisplay.classList.remove('fade-out');
         setTimeout(endAndClose, 5000);
     }, 600);
-
-    const key = color === 'red' ? RED_KEY : BLUE_KEY;
-    await upvote(key);
 }
 
 redBtn.addEventListener('click', (e) => {
