@@ -198,5 +198,11 @@ blueBtn.addEventListener('click', (e) => {
 
 // Initialization
 window.onload = () => {
-    showNextLine();
+    if (hasVoted) {
+        // Returning voter — skip the story and show the end screen immediately
+        textDisplay.innerHTML = 'Thank you for playing.';
+        setTimeout(endAndClose, 5000);
+    } else {
+        showNextLine();
+    }
 };
