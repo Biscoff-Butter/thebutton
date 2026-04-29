@@ -11,11 +11,16 @@ const blueBtn = document.getElementById('blue-btn');
 let hasVoted = localStorage.getItem('dilemma_voted');
 
 const storyLines = [
-    `Infront of you there are<br><span class="t-blue">t</span><span class="wo-red">wo</span> buttons.`,
-    `If over 50% of people<br>press the <span class="text-blue">BLUE</span> button`,
-    `Then EVERYONE lives.`,
-    `If over 50% pick <span class="text-red">RED</span>,<br>however`,
-    `Only those who picked<br><span class="text-red">RED</span> will live.`
+    `Welcome to the experiment.`,
+    `In front of you are two buttons.`,
+    `The rules are simple.`,
+    `If over 50% of people<br>press the <span class="text-blue">BLUE</span> button...`,
+    `Everyone survives.`,
+    `However...`,
+    `If 50% or more pick <span class="text-red">RED</span>...`,
+    `Only those who pressed <span class="text-red">RED</span> will live.`,
+    `Those who trusted the group and pressed <span class="text-blue">BLUE</span> will be eliminated.`,
+    `What do you choose?`
 ];
 
 let currentLine = 0;
@@ -46,21 +51,41 @@ function startEerieHum() {
 
         osc1.start();
         osc2.start();
+
+        // Start eerie drum loop
+        setInterval(() => {
+            if (!audioCtx || audioCtx.state !== 'running') return;
+            const drumOsc = audioCtx.createOscillator();
+            const drumGain = audioCtx.createGain();
+
+            drumOsc.type = 'sine';
+            drumOsc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            drumOsc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            drumGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            drumGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            drumOsc.connect(drumGain);
+            drumGain.connect(audioCtx.destination);
+
+            drumOsc.start();
+            drumOsc.stop(audioCtx.currentTime + 0.5);
+        }, 3000);
     } catch (e) {
-        console.log("Audio not supported or blocked");
+        console.log("Audio not supported or blocked. Fuck you.");
     }
 }
 
 function showNextLine() {
     if (isAnimating) return;
-    
+
     if (currentLine >= storyLines.length) {
         showChoice();
         return;
     }
 
     isAnimating = true;
-    
+
     const startNext = () => {
         textDisplay.innerHTML = storyLines[currentLine];
         textDisplay.classList.remove('fade-out');
@@ -82,7 +107,7 @@ function showNextLine() {
 
 function showChoice() {
     clearTimeout(autoAdvanceTimeout);
-    
+
     textDisplay.classList.add('fade-out');
     setTimeout(() => {
         if (hasVoted) {
@@ -97,16 +122,21 @@ function showChoice() {
 }
 
 function endAndClose() {
+    window.open('', '_self', '');
     window.close();
     // Fallback if browser blocks window.close()
-    window.location.href = 'about:blank';
+    document.body.innerHTML = '';
+    document.body.style.backgroundColor = '#000';
+    setTimeout(() => {
+        window.location.href = 'about:blank';
+    }, 100);
 }
 
 // Click anywhere to advance text faster and start audio
 document.addEventListener('mousedown', (e) => {
     startEerieHum();
     if (e.target.closest('button')) return;
-    
+
     if (currentLine <= storyLines.length && !hasVoted) {
         clearTimeout(autoAdvanceTimeout);
         showNextLine();
@@ -123,16 +153,16 @@ async function upvote(key) {
 
 async function handleVote(color) {
     if (hasVoted) return;
-    
+
     hasVoted = true;
     localStorage.setItem('dilemma_voted', color);
-    
+
     redBtn.disabled = true;
     blueBtn.disabled = true;
-    
+
     choiceContainer.classList.add('hidden');
     textDisplay.classList.add('fade-out');
-    
+
     setTimeout(() => {
         textDisplay.innerHTML = 'Thank you for playing.';
         textDisplay.classList.remove('fade-out');
