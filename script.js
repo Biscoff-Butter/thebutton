@@ -1,4 +1,4 @@
-const NAMESPACE = 'viral_button_dilemma_luna_2026';
+const NAMESPACE = 'viral_button_dilemma_luna_2026_prod';
 const RED_KEY = 'red_votes';
 const BLUE_KEY = 'blue_votes';
 const API_BASE = 'https://api.counterapi.dev/v1';
@@ -21,6 +21,35 @@ const storyLines = [
 let currentLine = 0;
 let isAnimating = false;
 let autoAdvanceTimeout = null;
+
+let audioCtx = null;
+function startEerieHum() {
+    if (audioCtx) return;
+    try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.value = 55; // Low A
+
+        osc2.type = 'triangle';
+        osc2.frequency.value = 57.5; // Slightly detuned for dissonance
+
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 5);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        osc1.start();
+        osc2.start();
+    } catch (e) {
+        console.log("Audio not supported or blocked");
+    }
+}
 
 function showNextLine() {
     if (isAnimating) return;
@@ -58,6 +87,7 @@ function showChoice() {
     setTimeout(() => {
         if (hasVoted) {
             textDisplay.innerHTML = 'Thank you for playing.';
+            setTimeout(endAndClose, 5000);
         } else {
             textDisplay.innerHTML = 'Choose.';
             choiceContainer.classList.remove('hidden');
@@ -66,8 +96,15 @@ function showChoice() {
     }, 600);
 }
 
-// Click anywhere to advance text faster
+function endAndClose() {
+    window.close();
+    // Fallback if browser blocks window.close()
+    window.location.href = 'about:blank';
+}
+
+// Click anywhere to advance text faster and start audio
 document.addEventListener('mousedown', (e) => {
+    startEerieHum();
     if (e.target.closest('button')) return;
     
     if (currentLine <= storyLines.length && !hasVoted) {
@@ -99,6 +136,7 @@ async function handleVote(color) {
     setTimeout(() => {
         textDisplay.innerHTML = 'Thank you for playing.';
         textDisplay.classList.remove('fade-out');
+        setTimeout(endAndClose, 5000);
     }, 600);
 
     const key = color === 'red' ? RED_KEY : BLUE_KEY;
@@ -106,10 +144,12 @@ async function handleVote(color) {
 }
 
 redBtn.addEventListener('click', (e) => {
+    startEerieHum();
     e.stopPropagation();
     handleVote('red');
 });
 blueBtn.addEventListener('click', (e) => {
+    startEerieHum();
     e.stopPropagation();
     handleVote('blue');
 });
