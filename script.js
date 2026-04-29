@@ -3,113 +3,112 @@ const RED_KEY = 'red_votes';
 const BLUE_KEY = 'blue_votes';
 const API_BASE = 'https://api.counterapi.dev/v1';
 
+const textDisplay = document.getElementById('text-display');
+const choiceContainer = document.getElementById('choice-container');
 const redBtn = document.getElementById('red-btn');
 const blueBtn = document.getElementById('blue-btn');
-const resultsPanel = document.getElementById('results-panel');
-const redCountEl = document.getElementById('red-count');
-const blueCountEl = document.getElementById('blue-count');
-const redPercentEl = document.getElementById('red-percent');
-const bluePercentEl = document.getElementById('blue-percent');
-const statusMessageEl = document.getElementById('status-message');
 
 let hasVoted = localStorage.getItem('dilemma_voted');
 
-async function fetchCount(key) {
-    try {
-        const response = await fetch(`${API_BASE}/${NAMESPACE}/${key}/`);
-        if (!response.ok) return 0;
-        const data = await response.json();
-        return data.count || 0;
-    } catch (e) {
-        return 0;
-    }
-}
+const storyLines = [
+    `Infront of you there are<br><span class="t-blue">t</span><span class="wo-red">wo</span> buttons.`,
+    `If over 50% of people<br>press the <span class="text-blue">BLUE</span> button`,
+    `Then EVERYONE lives.`,
+    `If over 50% pick <span class="text-red">RED</span>,<br>however`,
+    `Only those who picked<br><span class="text-red">RED</span> will live.`
+];
 
-async function upvote(key) {
-    try {
-        const response = await fetch(`${API_BASE}/${NAMESPACE}/${key}/up`);
-        if (!response.ok) return 1;
-        const data = await response.json();
-        return data.count || 1;
-    } catch (e) {
-        return 1;
-    }
-}
+let currentLine = 0;
+let isAnimating = false;
+let autoAdvanceTimeout = null;
 
-function updateUI(redCount, blueCount) {
-    const total = redCount + blueCount;
+function showNextLine() {
+    if (isAnimating) return;
     
-    redCountEl.innerText = redCount.toLocaleString();
-    blueCountEl.innerText = blueCount.toLocaleString();
-
-    if (total === 0) {
-        redPercentEl.innerText = '0%';
-        bluePercentEl.innerText = '0%';
-        statusMessageEl.innerText = 'waiting...';
+    if (currentLine >= storyLines.length) {
+        showChoice();
         return;
     }
 
-    const redPercent = (redCount / total) * 100;
-    const bluePercent = (blueCount / total) * 100;
+    isAnimating = true;
+    textDisplay.classList.add('fade-out');
 
-    redPercentEl.innerText = redPercent.toFixed(1) + '%';
-    bluePercentEl.innerText = bluePercent.toFixed(1) + '%';
+    setTimeout(() => {
+        textDisplay.innerHTML = storyLines[currentLine];
+        textDisplay.classList.remove('fade-out');
+        currentLine++;
+        isAnimating = false;
 
-    if (bluePercent > 50) {
-        statusMessageEl.innerText = 'humanity survives.';
-    } else if (bluePercent < 50) {
-        statusMessageEl.innerText = 'only red survives.';
-    } else {
-        statusMessageEl.innerText = 'it is tied.';
+        // Auto advance after 4.5 seconds
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = setTimeout(showNextLine, 4500);
+    }, 500); // 0.5s fade out duration
+}
+
+function showChoice() {
+    clearTimeout(autoAdvanceTimeout);
+    
+    if (hasVoted) {
+        textDisplay.classList.add('fade-out');
+        setTimeout(() => {
+            textDisplay.innerHTML = 'Thank you for playing.';
+            textDisplay.classList.remove('fade-out');
+        }, 500);
+        return;
+    }
+
+    textDisplay.classList.add('fade-out');
+    setTimeout(() => {
+        textDisplay.innerHTML = 'Choose.';
+        textDisplay.classList.remove('fade-out');
+        choiceContainer.classList.remove('hidden');
+    }, 500);
+}
+
+// Click anywhere to advance text faster
+document.addEventListener('click', (e) => {
+    // Don't advance if clicking on a button
+    if (e.target.closest('button')) return;
+    
+    if (currentLine <= storyLines.length && !hasVoted) {
+        clearTimeout(autoAdvanceTimeout);
+        showNextLine();
+    }
+});
+
+async function upvote(key) {
+    try {
+        await fetch(`${API_BASE}/${NAMESPACE}/${key}/up`);
+    } catch (e) {
+        console.error(e);
     }
 }
 
 async function handleVote(color) {
     if (hasVoted) return;
-
-    redBtn.disabled = true;
-    blueBtn.disabled = true;
+    
+    hasVoted = true;
     localStorage.setItem('dilemma_voted', color);
     
-    resultsPanel.classList.remove('hidden');
-
-    let currentRed = parseInt(redCountEl.innerText.replace(/,/g, '')) || 0;
-    let currentBlue = parseInt(blueCountEl.innerText.replace(/,/g, '')) || 0;
-
-    if (color === 'red') currentRed++;
-    if (color === 'blue') currentBlue++;
+    redBtn.disabled = true;
+    blueBtn.disabled = true;
     
-    updateUI(currentRed, currentBlue);
-    statusMessageEl.innerText = 'registering...';
+    choiceContainer.classList.add('hidden');
+    textDisplay.classList.add('fade-out');
+    
+    setTimeout(() => {
+        textDisplay.innerHTML = 'Thank you for playing.';
+        textDisplay.classList.remove('fade-out');
+    }, 500);
 
     const key = color === 'red' ? RED_KEY : BLUE_KEY;
     await upvote(key);
-    refreshData();
-}
-
-async function refreshData() {
-    const [red, blue] = await Promise.all([
-        fetchCount(RED_KEY),
-        fetchCount(BLUE_KEY)
-    ]);
-    updateUI(red, blue);
 }
 
 redBtn.addEventListener('click', () => handleVote('red'));
 blueBtn.addEventListener('click', () => handleVote('blue'));
 
-async function init() {
-    if (hasVoted) {
-        redBtn.disabled = true;
-        blueBtn.disabled = true;
-        resultsPanel.classList.remove('hidden');
-    }
-    await refreshData();
-    setInterval(() => {
-        if (!resultsPanel.classList.contains('hidden')) {
-            refreshData();
-        }
-    }, 5000);
-}
-
-init();
+// Start sequence
+setTimeout(() => {
+    showNextLine();
+}, 500);

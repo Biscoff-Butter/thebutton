@@ -1,12 +1,7 @@
-@font-face {
-    font-family: 'VCR OSD Mono';
-    src: local('VCR OSD Mono'), local('VCROSDMono');
-}
-
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'VCR OSD Mono', 'VT323', monospace;
+    font-family: 'VCR OSD Mono', monospace;
     font-size: 48px;
     display: flex;
     flex-direction: column;
@@ -14,20 +9,31 @@ body {
     justify-content: center;
     min-height: 100vh;
     margin: 0;
-    padding: 50px 0;
+    padding: 0;
     text-align: center;
     text-rendering: optimizeSpeed;
     -webkit-font-smoothing: none;
     line-height: 1.2;
+    overflow: hidden;
 }
 
-.container {
-    max-width: 1200px;
+#game-container {
     width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.text-block {
-    margin-bottom: 80px;
+#text-display {
+    min-height: 120px;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
+#text-display.fade-out {
+    opacity: 0;
 }
 
 .t-blue { color: #3b68b8; }
@@ -35,12 +41,15 @@ body {
 .text-blue { color: #3b68b8; }
 .text-red { color: #b32424; }
 
+#choice-container {
+    margin-top: 50px;
+    animation: fadeIn 1s forwards;
+}
+
 .button-container {
     display: flex;
     justify-content: center;
     gap: 100px;
-    margin-top: 50px;
-    margin-bottom: 50px;
 }
 
 .img-btn {
@@ -68,18 +77,13 @@ body {
     filter: grayscale(1) opacity(0.5);
 }
 
-.results {
-    font-size: 32px;
-    margin-top: 40px;
-}
-
 .hidden {
-    display: none;
+    display: none !important;
 }
 
-.status-message {
-    margin-top: 30px;
-    color: #ccc;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @media (max-width: 1200px) {

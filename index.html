@@ -4,45 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dilemma</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="container">
-        
-        <div class="text-block">
-            Infront of you there are<br>
-            <span class="t-blue">t</span><span class="wo-red">wo</span> buttons.
-        </div>
+    <main id="game-container">
+        <div id="text-display" class="fade-in"></div>
 
-        <div class="text-block">
-            If over 50% of people<br>
-            press the <span class="text-blue">BLUE</span> button
-        </div>
-
-        <div class="text-block">
-            Then EVERYONE lives.
-        </div>
-
-        <div class="text-block">
-            If over 50% pick <span class="text-red">RED</span>,<br>
-            however
-        </div>
-
-        <div class="text-block">
-            Only those who picked<br>
-            <span class="text-red">RED</span> will live.
-        </div>
-
-        <div class="button-container">
-            <button id="red-btn" class="img-btn"><img src="red.png" alt="red button"></button>
-            <button id="blue-btn" class="img-btn"><img src="blue.png" alt="blue button"></button>
-        </div>
-
-        <div id="results-panel" class="results hidden">
-            <p>red: <span id="red-count">0</span> (<span id="red-percent">0%</span>)</p>
-            <p>blue: <span id="blue-count">0</span> (<span id="blue-percent">0%</span>)</p>
-            <p id="status-message" class="status-message"></p>
+        <div id="choice-container" class="hidden">
+            <div class="button-container">
+                <button id="red-btn" class="img-btn"><img src="red.png" alt="red button"></button>
+                <button id="blue-btn" class="img-btn"><img src="blue.png" alt="blue button"></button>
+            </div>
         </div>
     </main>
 
