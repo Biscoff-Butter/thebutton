@@ -4,61 +4,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>results</title>
+    <title>results — dilemma</title>
+    <meta name="description" content="Experiment results. The data speaks.">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚫</text></svg>">
     <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'VCR OSD Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: local('VCR OSD Mono'), url('https://fonts.cdnfonts.com/s/14798/VCR_OSD_MONO_1.001[1].woff') format('woff');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
+            --pulse-color: #050000;
             background-color: #000;
-            color: #fff;
+            color: #e0e0e0;
             font-family: 'VCR OSD Mono', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
             text-align: center;
+            animation: backgroundPulse 10s infinite ease-in-out;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        /* CRT Scanlines */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* CRT Vignette */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 101;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { background-color: #000; }
+            50% { background-color: var(--pulse-color); }
+        }
+
+        .results-container {
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 2s 0.5s forwards;
+        }
+
+        .header {
+            font-size: 16px;
+            letter-spacing: 6px;
+            color: #555;
+            margin-bottom: 50px;
+            text-transform: uppercase;
         }
 
         .stats {
             font-size: 32px;
-            line-height: 2;
+            line-height: 2.5;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .stat-bar-container {
+            width: 200px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .stat-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 2s ease-out;
+            border-radius: 3px;
+        }
+
+        .stat-bar.red-bar {
+            background: linear-gradient(90deg, #ff3333, #ff6666);
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+        }
+
+        .stat-bar.blue-bar {
+            background: linear-gradient(90deg, #00f2ff, #66f7ff);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
         }
 
         .red {
-            color: #b32424;
+            color: #ff3333;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+            font-weight: bold;
         }
 
         .blue {
-            color: #3b68b8;
+            color: #00f2ff;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+            font-weight: bold;
         }
 
         .status {
             margin-top: 50px;
-            font-size: 24px;
-            opacity: 0.7;
+            font-size: 18px;
+            letter-spacing: 4px;
+            opacity: 0.5;
+            text-transform: uppercase;
         }
 
         button {
             margin-top: 50px;
             background: none;
-            border: 1px solid #fff;
-            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #555;
             font-family: inherit;
-            padding: 10px 20px;
-            cursor: pointer;
+            font-size: 14px;
+            letter-spacing: 4px;
+            padding: 12px 28px;
+            cursor: crosshair;
+            transition: border-color 0.3s, color 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            color: #999;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .stats { font-size: 22px; }
+            .stat-bar-container { width: 120px; }
+            .header { font-size: 12px; letter-spacing: 4px; }
         }
     </style>
 </head>
 
 <body>
-    <div class="stats">
-        <div>RED: <span id="red-count" class="red">...</span> (<span id="red-percent">0%</span>)</div>
-        <div>BLUE: <span id="blue-count" class="blue">...</span> (<span id="blue-percent">0%</span>)</div>
-    </div>
-    <div id="status" class="status">fetching fate...</div>
+    <div class="results-container">
+        <div class="header">Experiment Data — Round 1</div>
+        <div class="stats">
+            <div>
+                <div class="stat-row">
+                    RED: <span id="red-count" class="red">...</span> (<span id="red-percent">0%</span>)
+                </div>
+                <div class="stat-bar-container">
+                    <div id="red-bar" class="stat-bar red-bar"></div>
+                </div>
+            </div>
+            <div>
+                <div class="stat-row">
+                    BLUE: <span id="blue-count" class="blue">...</span> (<span id="blue-percent">0%</span>)
+                </div>
+                <div class="stat-bar-container">
+                    <div id="blue-bar" class="stat-bar blue-bar"></div>
+                </div>
+            </div>
+        </div>
+        <div id="status" class="status">fetching fate...</div>
 
-    <button onclick="location.reload()">REFRESH</button>
+        <button onclick="location.reload()">Refresh</button>
+    </div>
 
     <script>
         const NAMESPACE = 'viral_button_dilemma_luna_2026_prod';
@@ -90,6 +230,12 @@
                 const blueP = (blue / total * 100).toFixed(1);
                 document.getElementById('red-percent').innerText = redP + '%';
                 document.getElementById('blue-percent').innerText = blueP + '%';
+
+                // Animate bars
+                setTimeout(() => {
+                    document.getElementById('red-bar').style.width = redP + '%';
+                    document.getElementById('blue-bar').style.width = blueP + '%';
+                }, 500);
 
                 if (blueP > 50) {
                     document.getElementById('status').innerText = 'STATUS: HUMANITY SURVIVES';

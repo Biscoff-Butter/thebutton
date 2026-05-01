@@ -4,12 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dilemma</title>
+    <meta name="description" content="You are one of 1,000 participants. The rules are simple. Choose wisely.">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:title" content="dilemma">
+    <meta property="og:description" content="You are one of 1,000 participants. The rules are simple. Choose wisely.">
+    <meta property="og:type" content="website">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚫</text></svg>">
     <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- CRT static noise canvas -->
+    <canvas id="static-canvas"></canvas>
+
+    <!-- Floating particles -->
+    <div id="particles"></div>
+
+    <!-- Hover summary overlay -->
+    <div id="hover-summary"></div>
+
+    <!-- Glitch tear overlay -->
+    <div id="glitch-tear"></div>
+
+    <!-- Entry gate -->
+    <div id="entry-gate">
+        <div class="entry-text">
+            <div class="entry-line dim">EXPERIMENT #4871</div>
+            <div class="entry-line dim">STATUS: AWAITING PARTICIPANT</div>
+            <div class="entry-prompt blink">[ CLICK TO BEGIN ]</div>
+        </div>
+    </div>
+
     <main id="game-container">
-        <div id="text-display" class="fade-in"></div>
+        <div id="text-display" class="fade-in"><span class="cursor">█</span></div>
 
         <div id="choice-container" class="hidden">
             <div class="button-container">
@@ -19,6 +47,15 @@
         </div>
     </main>
 
+    <!-- Game Over Screen -->
+    <div id="game-over" class="hidden">
+        <div class="game-over-text">
+            <div id="game-over-line1"></div>
+            <div id="game-over-line2"></div>
+        </div>
+    </div>
+
+    <script src="audio_data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

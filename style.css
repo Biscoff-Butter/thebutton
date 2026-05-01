@@ -5,11 +5,29 @@
     src: local('VCR OSD Mono'), url('https://fonts.cdnfonts.com/s/14798/VCR_OSD_MONO_1.001[1].woff') format('woff');
 }
 
+/* ===========================
+   Custom Cursor
+   =========================== */
+
 body {
+    cursor: crosshair;
+}
+
+button, .img-btn {
+    cursor: crosshair;
+}
+
+/* ===========================
+   Root & Body
+   =========================== */
+
+body {
+    --pulse-color: #050000;
+    --static-opacity: 0;
     background-color: #000;
-    color: #fff;
+    color: #e0e0e0;
     font-family: 'VCR OSD Mono', 'VT323', monospace;
-    font-size: 64px; /* Increased size */
+    font-size: 64px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,8 +40,246 @@ body {
     -webkit-font-smoothing: none;
     line-height: 1.2;
     overflow: hidden;
-    cursor: pointer;
+    animation: backgroundPulse 10s infinite ease-in-out;
 }
+
+@keyframes backgroundPulse {
+    0%, 100% {
+        background-color: #000;
+    }
+    50% {
+        background-color: var(--pulse-color);
+    }
+}
+
+/* ===========================
+   CRT Scanline Overlay
+   =========================== */
+
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 100;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    animation: scanlineShift 0.1s infinite;
+}
+
+@keyframes scanlineShift {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 0 1px, 0 0; }
+}
+
+/* ===========================
+   CRT Vignette
+   =========================== */
+
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 101;
+    pointer-events: none;
+}
+
+/* ===========================
+   Static Noise Canvas
+   =========================== */
+
+#static-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99;
+    pointer-events: none;
+    opacity: var(--static-opacity);
+    mix-blend-mode: overlay;
+}
+
+/* ===========================
+   Floating Particles
+   =========================== */
+
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: particleDrift linear infinite;
+}
+
+@keyframes particleDrift {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh) translateX(30px);
+        opacity: 0;
+    }
+}
+
+/* ===========================
+   Hover Summary
+   =========================== */
+
+#hover-summary {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    font-size: 24px;
+    letter-spacing: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    text-transform: uppercase;
+}
+
+#hover-summary.visible {
+    opacity: 1;
+}
+
+/* ===========================
+   Glitch Tear
+   =========================== */
+
+#glitch-tear {
+    position: fixed;
+    left: 0;
+    width: 100vw;
+    height: 0;
+    z-index: 150;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 0, 255, 0.15) 20%,
+        rgba(0, 255, 255, 0.1) 40%,
+        transparent 60%,
+        rgba(255, 0, 0, 0.1) 80%,
+        transparent 100%
+    );
+    mix-blend-mode: screen;
+    opacity: 0;
+}
+
+#glitch-tear.active {
+    height: 4px;
+    opacity: 1;
+    animation: tearSweep 0.15s linear;
+}
+
+@keyframes tearSweep {
+    0% { top: 0; }
+    100% { top: 100vh; }
+}
+
+/* ===========================
+   Entry Gate
+   =========================== */
+
+#entry-gate {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 500;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: crosshair;
+    transition: opacity 1s ease-out;
+}
+
+#entry-gate.dismissed {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.entry-text {
+    text-align: center;
+}
+
+.entry-line {
+    font-size: 20px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    color: #555;
+}
+
+.entry-line.dim {
+    opacity: 0;
+    animation: entryFadeIn 2s forwards;
+}
+
+.entry-line.dim:nth-child(2) {
+    animation-delay: 1.5s;
+}
+
+.entry-prompt {
+    font-size: 28px;
+    margin-top: 40px;
+    color: #888;
+    letter-spacing: 6px;
+    opacity: 0;
+    animation: entryFadeIn 1s 3.5s forwards;
+}
+
+.entry-prompt.blink {
+    animation: entryFadeIn 1s 3.5s forwards, promptBlink 1.2s 4.5s infinite;
+}
+
+@keyframes entryFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes promptBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ===========================
+   Game Container
+   =========================== */
 
 #game-container {
     width: 100%;
@@ -32,10 +288,22 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 10;
+    position: relative;
+    opacity: 0;
+    transition: opacity 1s ease-in;
 }
 
+#game-container.active {
+    opacity: 1;
+}
+
+/* ===========================
+   Text Display
+   =========================== */
+
 #text-display {
-    min-height: 200px; /* Increased height */
+    min-height: 200px;
     transition: opacity 0.4s ease-in-out;
     opacity: 1;
     max-width: 90vw;
@@ -46,10 +314,33 @@ body {
     opacity: 0;
 }
 
-.t-blue { color: #3b68b8; }
-.wo-red { color: #b32424; }
-.text-blue { color: #3b68b8; }
-.text-red { color: #b32424; }
+/* Terminal cursor */
+.cursor {
+    animation: cursorBlink 0.8s step-end infinite;
+    opacity: 0.7;
+    font-size: 0.8em;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0; }
+}
+
+.text-blue {
+    color: #00f2ff;
+    text-shadow: 0 0 12px rgba(0, 242, 255, 0.6), 0 0 30px rgba(0, 242, 255, 0.15);
+    font-weight: bold;
+}
+
+.text-red {
+    color: #ff3333;
+    text-shadow: 0 0 12px rgba(255, 51, 51, 0.6), 0 0 30px rgba(255, 51, 51, 0.15);
+    font-weight: bold;
+}
+
+/* ===========================
+   Choice Buttons
+   =========================== */
 
 #choice-container {
     margin-top: 40px;
@@ -66,60 +357,238 @@ body {
     background: none;
     border: none;
     padding: 0;
-    cursor: pointer;
-    transition: transform 0.1s;
+    cursor: crosshair;
+    transition: transform 0.15s ease-out;
     outline: none;
+    position: relative;
+    z-index: 20;
 }
 
 .img-btn img {
     width: 500px;
     height: 500px;
     display: block;
-    image-rendering: pixelated;
+    image-rendering: auto;
     border: 2px solid transparent;
+    border-radius: 50%;
+    transition: border-color 0.3s, filter 0.3s;
 }
 
 .img-btn:hover img {
-    border-color: rgba(255,255,255,0.2);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#red-btn:hover img {
+    filter: brightness(1.3) drop-shadow(0 0 25px rgba(255, 51, 51, 0.5));
+    animation: buttonPulseRed 2s infinite alternate ease-in-out;
+}
+
+#blue-btn:hover img {
+    filter: brightness(1.3) drop-shadow(0 0 25px rgba(0, 242, 255, 0.5));
+    animation: buttonPulseBlue 2s infinite alternate ease-in-out;
+}
+
+@keyframes buttonPulseRed {
+    0% {
+        transform: scale(1) skew(0deg);
+        filter: brightness(1.3) drop-shadow(0 0 25px rgba(255, 51, 51, 0.5));
+    }
+    100% {
+        transform: scale(1.03) skew(0.5deg);
+        filter: brightness(1.5) drop-shadow(0 0 50px rgba(255, 51, 51, 0.7));
+    }
+}
+
+@keyframes buttonPulseBlue {
+    0% {
+        transform: scale(1) skew(0deg);
+        filter: brightness(1.3) drop-shadow(0 0 25px rgba(0, 242, 255, 0.5));
+    }
+    100% {
+        transform: scale(1.03) skew(-0.5deg);
+        filter: brightness(1.5) drop-shadow(0 0 50px rgba(0, 242, 255, 0.7));
+    }
 }
 
 .img-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
 }
 
 .img-btn:disabled {
     cursor: not-allowed;
-    filter: grayscale(1) opacity(0.2);
+    filter: grayscale(1) opacity(0.15);
 }
+
+/* ===========================
+   Screen Shake
+   =========================== */
+
+.screen-shake {
+    animation: shakeScreen 0.4s ease-out;
+}
+
+@keyframes shakeScreen {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-6px, 3px); }
+    20% { transform: translate(5px, -4px); }
+    30% { transform: translate(-4px, 2px); }
+    40% { transform: translate(3px, -3px); }
+    50% { transform: translate(-2px, 1px); }
+    60% { transform: translate(2px, -1px); }
+    80% { transform: translate(-1px, 0px); }
+    100% { transform: translate(0, 0); }
+}
+
+/* ===========================
+   Game Over Screen
+   =========================== */
+
+#game-over {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 300;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.game-over-text {
+    text-align: center;
+    font-size: 36px;
+    line-height: 2;
+    opacity: 0;
+    animation: fadeIn 3s 0.5s forwards;
+}
+
+#game-over-line1 {
+    color: #555;
+    font-size: 24px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+#game-over-line2 {
+    color: #333;
+    font-size: 16px;
+    letter-spacing: 4px;
+    margin-top: 20px;
+}
+
+/* ===========================
+   Utility
+   =========================== */
 
 .hidden {
     display: none !important;
 }
+
+#flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1000;
+    filter: brightness(2) contrast(3) grayscale(1);
+    opacity: 0.4;
+    pointer-events: none;
+    image-rendering: pixelated;
+}
+
+/* ===========================
+   Animations
+   =========================== */
 
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+        text-shadow: none;
+    }
+    20% {
+        transform: translate(-3px, 1px);
+        text-shadow: 3px 0 #ff00ea, -3px 0 #00ffff;
+    }
+    40% {
+        transform: translate(-1px, -2px);
+        text-shadow: -2px 0 #ff00ea, 2px 0 #00ffff;
+    }
+    60% {
+        transform: translate(3px, 1px);
+        text-shadow: 2px 0 #ff00ea, -2px 0 #00ffff;
+    }
+    80% {
+        transform: translate(1px, -1px);
+        text-shadow: -3px 0 #ff00ea, 3px 0 #00ffff;
+    }
+    100% {
+        transform: translate(0);
+        text-shadow: none;
+    }
+}
+
+.glitch-effect {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
+}
+
+/* ===========================
+   Responsive
+   =========================== */
+
 @media (max-width: 1200px) {
-    body { font-size: 48px; }
+    body {
+        font-size: 48px;
+    }
+
     .button-container {
         flex-direction: column;
         align-items: center;
         gap: 30px;
     }
+
     .img-btn img {
-        width: 350px;
-        height: 350px;
+        width: 300px;
+        height: 300px;
     }
 }
 
 @media (max-width: 600px) {
     body {
-        font-size: 32px;
+        font-size: 28px;
     }
+
     .img-btn img {
-        width: 250px;
-        height: 250px;
+        width: 200px;
+        height: 200px;
+    }
+
+    .entry-line {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    .entry-prompt {
+        font-size: 18px;
+        letter-spacing: 3px;
+    }
+
+    #text-display {
+        min-height: 120px;
+    }
+
+    .button-container {
+        gap: 20px;
     }
 }
